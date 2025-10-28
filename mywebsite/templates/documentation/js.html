@@ -1,0 +1,171 @@
+{% extends "dashboardbase.html" %}
+{% load static %}
+
+{% block style %}
+<style>
+</style>
+{% endblock %}
+
+{% block header %}
+{% include "header.html" %}
+{% endblock %}
+
+{% block sidebar %}
+{% include "sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="content-body">
+    <div class="container-fluid">
+        
+        <!-- row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="profile card card-body px-3 pt-3 pb-0">
+                    <div class="profile-head">
+                        <div class="photo-content">
+                           <div class="cover-photo rounded"
+                                style="background-image: url(&quot;{% static 'allstatic/images/jstext.png' %}&quot;);">
+                            </div>
+                        </div>
+                        <div class="profile-info">
+                            <div class="profile-details">
+                                <div class="profile-name px-3 pt-2">
+                                    <h4 class="text-primary mb-0">System Chatbot API</h4>
+                                    <p>Chat with your PDF - API powered by JavaScript</p>
+                                </div>
+                                <div class="profile-email px-2 pt-2">
+                                    <h4 class="text-muted mb-0">Version Documentation</h4>
+                                    <p>Version 1.0.0 - 09/2025</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- PHP Example -->
+            <div class="col-xl-4">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="profile-blog">
+                                    <h5 class="text-primary d-inline">How to Send API Request (JavaScript)</h5>
+
+<p class="mt-3">Berikut contoh sederhana pemanggilan API menggunakan <code>fetch</code> di JavaScript:</p>
+
+<pre><code class="language-javascript">
+const url = "https://domainmu.com/proseschat";
+
+const payload = {
+  api_key: "TEMPEL_API_KEY_DISINI",
+  message: "Kirim pertanyaan anda?"
+};
+
+fetch(url, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(payload)
+})
+.then(response => response.json())
+.then(data => {
+  console.log("Status:", data.status);
+  console.log("Message:", data.message);
+  console.log("Lengkap:", data.lengkap);
+  console.log("Topk:", data.topk);
+})
+.catch(error => {
+  console.error("Error:", error);
+});
+                                    </code></pre>
+
+                                    <p class="mt-3"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JSON Response Example -->
+            <div class="col-xl-4">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="profile-blog">
+                                    <h5 class="text-primary d-inline">How to Use Response API</h5>
+
+                                    <p class="mt-3">API akan merespons dalam format JSON seperti berikut:</p>
+
+<pre><code class="language-json">
+{
+    "status": "success",
+    "message": "Respon pesan ke pengguna",
+    "lengkap": "Gabungan hasil temuan kutipan teks 1,2,3",
+    "topk": [
+        [
+            "chunk 1",
+            score
+        ],
+        [
+            "chunk 2",
+            score
+        ],
+        [
+            "chunk 3",
+            score
+        ]
+    ]
+}
+</code></pre>
+
+                                    <p class="mt-3">Contoh hasil:</p>
+
+<pre><code class="language-json">
+{
+    "status": "success",
+    "message": "Presiden Indonesia pada tahun 1945 adalah Soekarno, dan Wakil Presiden adalah Mohammad Hatta.",
+    "lengkap": "Ia menjabat sebagai presiden setelah memproklamasikan kemerdekaan Indonesia bersama wakilnya, Mohammad Hatta...",
+    "topk": [
+        [
+            "Ia menjabat sebagai presiden setelah memproklamasikan kemerdekaan Indonesia bersama wakilnya, Mohammad Hatta...",
+            0.7291174
+        ],
+        [
+            "Setelah Jepang menyerah, Soekarno dan Mohammad Hatta mendeklarasikan kemerdekaan Indonesia pada tanggal 17 Agustus 1945, dan Sukarno...",
+            0.7222233
+        ],
+        [
+            "Ir. Soekarno (Ejaan Republik: Sukarno; 6 Juni 1901 – 21 Juni 1970), dikenal juga dengan sapaan Bung Karno, adalah...",
+            0.7210511
+        ]
+    ]
+}
+</code></pre>
+
+                                    <p class="mt-3">Hasil response akan berupa JSON dengan jawaban chatbot berdasarkan dokumen PDF Anda.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--**********************************
+    Content body end
+***********************************-->
+{% endblock %}
+
+{% block footer %}
+{% include "footer.html" %}
+{% endblock %}

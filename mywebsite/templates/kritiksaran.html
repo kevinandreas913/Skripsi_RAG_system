@@ -1,0 +1,293 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+   <head>
+      <!-- basic -->
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!-- mobile metas -->
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+      <!-- site metas -->
+      <title>CHAPI</title>
+      <meta name="keywords" content="">
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <!-- bootstrap css -->
+      <link rel="stylesheet" type="text/css" href="{% static 'landingpage/css/bootstrap.min.css' %}">
+      <!-- style css -->
+      <link rel="stylesheet" type="text/css" href="{% static 'landingpage/css/style.css' %}">
+      <!-- Responsive-->
+      <link rel="stylesheet" href="{% static 'landingpage/css/responsive.css' %}">
+      <!-- fevicon -->
+      <link rel="icon" href="{% static 'landingpage/images/fevicon.png' %}" type="image/gif" />
+      <!-- fonts -->
+      <link href="https://fonts.googleapis.com/css?family=Poppins:400,700|Sen:400,700,800&display=swap" rel="stylesheet">
+      <!-- Scrollbar Custom CSS -->
+      <link rel="stylesheet" href="{% static 'landingpage/css/jquery.mCustomScrollbar.min.css' %}">
+      <!-- Tweaks for older IEs-->
+      <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+
+      <!-- prims -->
+      <link rel="stylesheet" href="{% static 'landingpage/css/prism.css' %}">
+   </head>
+   <body>
+      <!-- header section start -->
+      <div class="header_section">
+         <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+               <a class="navbar-brands"href="#"><img src="{% static 'landingpage/images/logo.png' %}"></a>
+               <span class="navbar-toggler-icon"></span>
+               </button
+            </nav>
+         </div>
+
+         <!-- banner section start --> 
+         <div class="banner_section layout_padding">
+            <div id="my_slider" class="carousel slide" data-ride="carousel">
+               <div class="carousel-inner">
+                  <div class="carousel-item active">
+                     <div class="container">
+                        <div class="row">
+                           <div class="col-md-6">
+                              <h1 class="banner_taital">API System <br>For All</h1>
+                              <div class="read_bt"><a href="{% url 'landingpage' %}">Home</a></div>
+                           </div>
+                           <div class="col-md-6">
+                              <div class="banner_img"><img src="{% static 'landingpage/images/systemapi.png' %}" width="400" height="400" style="padding-left: 100px; "></div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="carousel-item">
+                     <div class="container">
+                        <div class="row">
+                           <div class="col-md-6">
+                              <h1 class="banner_taital">Simple And <br>Easy To Use </h1>
+                              <div class="read_bt"><a href="{% url 'landingpage' %}">Home</a></div>
+                           </div>
+                           <div class="col-md-6">
+                              <div class="banner_img"><img src="{% static 'landingpage/images/easy.png' %}" width="400" height="400" style="padding-left: 100px;"></div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  
+               </div>
+               <a class="carousel-control-prev" href="#my_slider" role="button" data-slide="prev">
+               <i class="fa fa-angle-left"></i>
+               </a>
+               <a class="carousel-control-next" href="#my_slider" role="button" data-slide="next">
+               <i class="fa fa-angle-right"></i>
+               </a>
+            </div>
+         </div>
+         <!-- banner section end -->
+      </div>
+      <!-- header section end -->
+
+      <!-- feedback section start -->
+      <div class="feedback_section layout_padding" id="feedback">
+         <div class="row">
+            <h1 class="faster_text_judol">Contact Us</h1>
+         </div>
+         <div class="container_feedback">
+            <div class="col-12">
+               <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title"><b>Feedback or Suggestions</b></h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" id="newfeedbacksuggestions">
+                            {% csrf_token %}
+                            <span class="feedback-text">Name*</span>
+                            <div class="mb-3">
+                                <input type="text" class="form-control input-default " placeholder="input name here!" id="name" name="name">
+                            </div>
+                            <span class="feedback-text">Phone Number*</span>
+                            <div class="mb-3">
+                                <input type="tel" class="form-control input-default " placeholder="input phone number here!" id="phone" name="phone">
+                            </div>
+                            <span class="feedback-text">Email*</span>
+                            <div class="mb-3">
+                                <input type="email" class="form-control input-default " placeholder="input@email.here" id="email" name="email">
+                            </div>
+                            <span class="feedback-text">Feedback/suggestion/etc*</span>
+                            <div class="mb-3">
+                                <textarea class="form-control" rows="4" id="chat" name="chat"></textarea>
+                            </div>
+                            <button type="button" class="btn btn-primary button_submitku"id="submitcontactus">submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+         </div>
+      </div>
+      <!-- feedback section end -->
+
+      <!-- footer section start -->
+      <div class="newslatter_section layout_padding" id="contactus">
+         <div class="container">
+            <div class="row">
+               <div class="col-sm-4">
+                  <h3 class="footer_text">Useful links</h3>
+                  <div class="footer_menu">
+                     <ul>
+                        <li class="active"><a href="{% url 'landingpage' %}"><span class="angle_icon active"><i class="fa fa-arrow-right" aria-hidden="true"></i></span>Home</a></li>
+                        <li><a href="#"><span class="angle_icon"><i class="fa fa-arrow-right" aria-hidden="true"></i></span>About Us</a></li>
+                        <li><a href="#"><span class="angle_icon"><i class="fa fa-arrow-right" aria-hidden="true"></i></span>Overview</a></li>
+                        <li><a href="#"><span class="angle_icon"><i class="fa fa-arrow-right" aria-hidden="true"></i></span>How to Use</a></li>
+                        <li><a href="{% url 'login' %}"><span class="angle_icon"><i class="fa fa-arrow-right" aria-hidden="true"></i></span>Login</a></li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-sm-4">
+                  <h3 class="footer_text">Chat with us</h3>
+                  <div class="location_text">
+                     <ul>
+                        <li>
+                           <span>If you have any feedback or suggestions, feel free to contact us here</span>
+                        </li>
+                        <br>
+                        <li>
+                           <a href="#">
+                           <span class="padding_left_10"><i class="fa fa-envelope" aria-hidden="true"></i></span>
+                           <b>click here!</b>
+                           </a>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-sm-4">
+                  <div class="footer_main">
+                     <h3 class="footer_text">Social Media</h3>
+                     <div class="social_icon">
+                        <ul>
+                           <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+                           <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+                           <li><a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- footer section end -->
+
+      <!-- Javascript files-->
+      <script src="{% static 'landingpage/js/jquery.min.js' %}"></script>
+      <script src="{% static 'landingpage/js/popper.min.js' %}"></script>
+      <script src="{% static 'landingpage/js/bootstrap.bundle.min.js' %}"></script>
+      <script src="{% static 'landingpage/js/jquery-3.0.0.min.js' %}"></script>
+      <script src="{% static 'landingpage/js/plugin.js' %}"></script>
+      <!-- sidebar -->
+      <script src="{% static 'landingpage/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+      <script src="{% static 'landingpage/js/custom.js' %}"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+      <!-- prims -->
+      <script src="{% static 'landingpage/js/prism.js' %}"></script>
+
+      <script>
+         $("#submitcontactus").click(function(event){
+            event.preventDefault();
+
+            function validate(){
+                  const name = $("#name").val().trim();
+                  const phone = $("#phone").val().trim();
+                  const email = $("#email").val().trim();
+                  const chat = $("#chat").val().trim();
+
+                  if(!name){
+                     Swal.fire({ 
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Masukkan nama anda!"
+                     });
+                     return false;
+                  }
+
+                  if(!phone){
+                     Swal.fire({ 
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Masukkan nomor telepon anda!"
+                     });
+                     return false;
+                  }
+
+                  if(!email){
+                     Swal.fire({ icon: "error",
+                     title: "Oops...",
+                     text: "Masukkan email anda!"
+                     });
+                     return false;
+                  }
+                  if (!email.includes("@")) {
+                     Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Email harus mengandung @gmail atau @company!",
+                     });
+                     return false;
+                  } 
+
+                  if(!chat){
+                     Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Masukkan feedback/saran/masalah anda!"
+                     });
+                     return false;
+                  }
+                  return true;
+            }
+
+            if(!validate()){
+                  return true;
+            }
+
+            $("#loading-overlay").css("display", "flex");
+
+            let formdata = new FormData();
+            formdata.append("name", $("#name").val());
+            formdata.append("phone", $("#phone").val());
+            formdata.append("gmail", $("#email").val());
+            formdata.append("questions", $("#chat").val());
+            formdata.append("csrfmiddlewaretoken", $("input[name='csrfmiddlewaretoken']").val());
+
+            $.ajax({
+                  url: "{% url 'kritiksaran' %}",
+                  type: "POST",
+                  data: formdata,
+                  processData: false,
+                  contentType: false,
+                  success: function(response){
+                     $("#loading-overlay").hide();
+                     if(response.status === "success"){
+                        Swal.fire({
+                              icon: "success",
+                              title: "Berhasil!",
+                              text: "Feedback anda berhasil dikirim, terima kasih!",
+                              confirmButtonText: "OK",
+                        }).then(() => {
+                              // Reset form setelah sukses
+                              $("#newfeedbacksuggestions")[0].reset();
+                        });
+                     } else {
+                        Swal.fire({ icon: "error", title: "Oops...", text: response.message });
+                     }
+                  },
+                  error: function(){
+                     $("#loading-overlay").hide();
+                     Swal.fire({ icon: "error", title: "Oops...", text: "Terjadi kesalahan saat request!" });
+                  }
+            });
+         });
+      </script>
+
+   </body>
+</html>

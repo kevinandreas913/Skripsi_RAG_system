@@ -1,0 +1,435 @@
+{% extends "dashboardbase.html" %}
+{% load static %}
+
+{% block style %}
+
+{% endblock %}
+
+{% block header %}
+{% include "header.html" %}
+{% endblock %}
+
+{% block sidebar %}
+{% include "sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+<!--**********************************
+    Content body start
+***********************************-->
+    <div class="content-body" style="min-height: 700px;">
+        <div class="card-body" style="padding: 10px 10px 0 10px;">
+            <div class="alert alert-info alert-dismissible fade show mt-2">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <strong>Info!</strong> Setelah mengubah data pengguna, maka pengguna akan diarahkan untuk login kembali!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
+                </button>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title" style="text-align: center;"><b>User Data Center</b></h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- username -->
+                        <form method="post" id="">
+                            {% csrf_token %}
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Username</span>
+                                <input type="text" class="form-control" placeholder="{{ username }}" id="nama" name="username" required>
+                                <button type="button" class="btn btn-square btn-primary text-center" id="gantiusername">submit</button>
+                            </div>
+                            <div id="passwordusername" style="display:none; text-align: center;" class="mt-3 mb-3">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">Password saat ini</span>
+                                    <input type="password" class="form-control" id="current_password_username" name="current_password_username" required>
+                                </div>
+                                <button type="button" class="btn btn-success setujuupdate" data-type="username">Konfirmasi ganti username</button>
+                            </div>
+                        </form>
+                        <!-- email -->
+                        <form method="post" id="">
+                            {% csrf_token %}
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Email</span>
+                                <input type="email" class="form-control" placeholder="{{ gmail }}" id="gmail" name="gmail" required>
+                                <button type="button" class="btn btn-square btn-primary text-center" id="gantiemail">submit</button>
+                            </div>
+                            <div id="passwordgmail" style="display:none; text-align: center;" class="mt-3 mb-3">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">Password saat ini</span>
+                                    <input type="password" class="form-control" id="current_password_gmail" name="current_password_gmail" required>
+                                </div>
+                                <button type="button" class="btn btn-success setujuupdate" data-type="gmail">Konfirmasi ganti gmail</button>
+                            </div>
+                        </form>
+                        <!-- password -->
+                        <form method="post" id="">
+                            {% csrf_token %}
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">New Password</span>
+                                <input type="password" class="form-control" placeholder="Input your new password here" id="gantipassword" name="gantipassword" required>
+                                <button type="button" class="btn btn-square btn-primary text-center" id="gantipasswordbtn">submit</button>
+                            </div>
+                            <div id="passwordgantipassword" style="display:none; text-align: center;" class="mt-3 mb-3">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">Retype New Password</span>
+                                    <input type="password" class="form-control" placeholder="Retype Password Here" id="retypepassword" required>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">Password saat ini</span>
+                                    <input type="password" class="form-control" id="current_password_gantipassword" name="current_password_gantipassword" required>
+                                </div>
+                                <button type="button" class="btn btn-success setujuupdate" data-type="gantipassword">Konfirmasi ganti gmail</button>
+                            </div>
+                        </form>
+                        <form method="post" id="">
+                            {% csrf_token %}
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Photo</span>
+                                <div class="form-file">
+                                    <input type="file" class="form-file-input form-control" accept=".jpg, .jpeg, .png" id="photo_file" name="file" placeholder="ukuran maksimal file 2mb" required>
+                                </div>
+                                <button type="button" class="btn btn-square btn-primary text-center" id="gantiphoto">submit</button>
+                            </div>
+                            <div id="passwordphoto" style="display:none; text-align: center;" class="mt-3 mb-3">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">Password saat ini</span>
+                                    <input type="password" class="form-control" id="current_password_photo" name="current_password_photo" required>
+                                </div>
+                                <button type="button" class="btn btn-success setujuupdate" data-type="photo">Konfirmasi ganti foto</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--**********************************
+    Content body end
+***********************************-->
+{% endblock %}
+
+{% block script %}
+<script>
+    $("#gantiusername").click(function (event) {
+        event.preventDefault();
+
+        const nama = $("#nama").val();
+        if (!nama.trim()) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Inputkan nama terlebih dahulu!",
+            });
+            return false;
+        }
+        if (nama.length > 20) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Nama maksimal 20 karakter!",
+            });
+            return false;
+        }
+        $("#passwordusername").slideDown();
+    });
+
+    $("#gantiemail").click(function (event) {
+        event.preventDefault();
+
+        const gmail = $("#gmail").val();
+        if (!gmail.trim()) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Inputkan email terlebih dahulu!",
+            });
+            return false;
+        } 
+        if (!gmail.includes("@")) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Email harus mengandung @gmail atau @company!",
+            });
+            return false;
+        } 
+        $("#passwordgmail").slideDown();
+    });
+
+    $("#gantipasswordbtn").click(function (event) {
+        event.preventDefault();
+
+        const gantipassword = $("#gantipassword").val();
+        if (!gantipassword.trim()) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Inputkan password terlebih dahulu!",
+            });
+            return false;
+        }
+        if (gantipassword.length <= 7) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Password minimal 8 karakter!",
+            });
+            return false;
+        }
+        if (gantipassword.length >= 25) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Password maximal 25 karakter!",
+            });
+            return false;
+        }
+
+        
+        $("#passwordgantipassword").slideDown();
+    });
+
+    $("#gantiphoto").click(function(event){
+        event.preventDefault();
+
+        const photo = $("#photo_file")[0];
+        const file = photo.files[0];
+        if(!file){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Masukkan foto anda terlebih dahulu!",
+            });
+            return false;
+        }
+        const allowedTypes = ["image/jpeg", "image/png"];
+        if (!allowedTypes.includes(file.type)) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "File harus berformat JPG, JPEG, atau PNG!",
+            });
+            return false;
+        }
+        const maxSize = 2 * 1024 * 1024; // 2 MB dalam byte
+        if (file.size > maxSize) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Ukuran file maksimal 2 MB!",
+            });
+            return false;
+        }
+
+        $("#passwordphoto").slideDown();
+    })
+
+    $(document).on('click', '.setujuupdate', function (event) {
+        event.preventDefault();
+
+        const type = $(this).data("type");
+        let nama, gmail, gantipassword, photo, password;
+
+        if (type === "username") {
+            nama = $("#nama").val();
+            password = $("#current_password_username").val();
+
+            if (!nama.trim()) {
+                Swal.fire({ 
+                    icon: "error", 
+                    title: "Oops...", 
+                    text: "Inputkan nama terlebih dahulu!" });
+                return false;
+            }
+            if (nama.length > 20) {
+                Swal.fire({ 
+                    icon: "error", 
+                    title: "Oops...",
+                    text: "Nama maksimal 20 karakter!" });
+                return false;
+            }
+        } 
+
+        if (type === "gmail") {
+            gmail = $("#gmail").val();
+            password = $("#current_password_gmail").val();
+
+            if (!gmail.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Inputkan email terlebih dahulu!",
+                });
+                return false;
+            } 
+            if (!gmail.includes("@")) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Email harus mengandung @gmail atau @company!",
+                });
+                return false;
+            } 
+        } 
+
+        if (type === "gantipassword"){
+            gantipassword = $("#gantipassword").val();
+            password = $("#current_password_gantipassword").val();
+
+            if (!gantipassword.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Inputkan password terlebih dahulu!",
+                });
+                return false;
+            }
+            if (gantipassword.length <= 7) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Password minimal 8 karakter!",
+                });
+                return false;
+            }
+            if (gantipassword.length >= 25) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Password maximal 25 karakter!",
+                });
+                return false;
+            }
+
+            const retypepassword = $("#retypepassword").val();
+            if (!retypepassword.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Harap ulangi password!",
+                });
+                return false;
+            }
+            if (retypepassword.trim() !== gantipassword.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Password baru dan ulangi password baru harus sama!",
+                });
+                return false;
+            }
+
+            if (retypepassword.trim() === password.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Password baru tidak boleh sama dengan password lama!",
+                });
+                return false;
+            }
+        }
+
+        if (type === "photo"){
+            photo = $("#photo_file")[0].files[0];
+            password = $("#current_password_photo").val();
+
+            if(!photo){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Masukkan foto anda terlebih dahulu!",
+                });
+                return false;
+            }
+            const allowedTypes = ["image/jpeg", "image/png"];
+            if (!allowedTypes.includes(photo.type)) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "File harus berformat JPG, JPEG, atau PNG!",
+                });
+                return false;
+            }
+            const maxSize = 2 * 1024 * 1024; // 2 MB dalam byte
+            if (photo.size > maxSize) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Ukuran file maksimal 2 MB!",
+                });
+                return false;
+            }
+        }
+
+        if (!password.trim()) {
+            Swal.fire({ 
+                icon: "error", 
+                title: "Oops...", 
+                text: "Masukkan password anda yang sudah ada untuk konfirmasi!" });
+            return false;
+        }
+
+        $("#loading-overlay").css("display", "flex");
+
+        let formdata = new FormData();
+        formdata.append("type", type);
+        if (type === "username") formdata.append("username", nama);
+        if (type === "gmail") formdata.append("gmail", gmail);
+        if (type == "gantipassword") formdata.append("gantipassword", gantipassword);
+        if (type === "photo") formdata.append("photo", photo);
+
+        formdata.append("current_password", password);
+        formdata.append("csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val());
+        $.ajax({
+            url: "{% url 'pagesetting' %}",
+            type: "POST",
+            data: formdata,
+            processData: false, // agar jQuery tidak memproses data jadi string
+            contentType: false, //agar jQuery tidak set content-type ke application/x-www-form-urlencoded
+
+            success: function (response) {
+                if (response.status == "success") {
+                    $("#loading-overlay").hide();
+                    Swal.fire({
+                        icon: "success",
+                        title: "Berhasil!",
+                        text: response.message,
+                        confirmButtonText: "OK",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "{% url 'logout' %}";
+                        }
+                    });
+                } else {
+                    $("#loading-overlay").hide();
+                    let errorMessage = response.message;
+                    if (response.errors) {
+                        const errors = JSON.parse(response.errors); // Parse error JSON
+                        if (errors.username) {
+                        errorMessage += "\n" + errors.username[0].message ;
+                        }
+                        if (errors.password) {
+                        errorMessage += "\n" + errors.password[0].message;
+                        }
+                    } 
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Gagal melakukan perubahan, pastikan password anda sudah benar!",
+                    });
+                }
+            },
+        })
+    });
+</script>
+{% endblock %}
+
+{% block footer %}
+{% include "footer.html" %}
+{% endblock %}

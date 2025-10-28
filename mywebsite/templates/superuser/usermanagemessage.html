@@ -1,0 +1,307 @@
+{% extends "dashboardbase.html" %}
+{% load static %}
+
+{% block style %}
+<link href="{% static 'allstatic/vendor/datatables/css/jquery.dataTables.min.css' %}" rel="stylesheet">
+<style>
+    #newfeedback {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block header %}
+{% include "header.html" %}
+{% endblock %}
+
+{% block sidebar %}
+{% include "sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+<!--**********************************
+    Content body start
+***********************************-->
+    <div class="content-body" style="min-height: 700px;">
+        <div class="card-body" style="padding: 10px 10px 0 10px;">
+            <!-- <div class="alert alert-warning alert-dismissible fade show mt-2">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <strong>Warning!</strong> Fitur hapus hanya jika ada persetujuan dari user!
+            </div> -->
+            <!-- <div class="alert alert-info alert-dismissible fade show mt-1">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <strong>Info!</strong> sistem memerlukan waktu 3-5 menit untuk memproses data setelah disimpan, mohon menunggu!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
+                </button>
+            </div> -->
+        </div>
+        <div class="container-fluid">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="example" class="display" style="min-width: 845px">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Gmail</th>
+                                        <th>Date</th>
+                                        <th>Questions</th>
+                                        <th>Feedback</th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in datauser %}
+                                        <tr>
+                                            <td>{{ item.name }}</td>
+                                            <td>{{ item.gmail }}</td>
+                                            <td>{{ item.date|date:"Y-m-d H:i" }}</td>
+                                            <td>{{ item.questions }}</td>
+                                            <td>{{ item.feedback }}</td>
+                                            <td>{{ item.status }}</td>
+                                            <td>
+                                                <a href="#" style="color: blue;" class="makefeedback-btn" data-id="{{ item.id }}" data-name="{{ item.name }}" data-gmail="{{ item.gmail }}" data-questions="{{ item.questions }}" name="makefeedback" id="makefeedback"><i class="fas fa-comments"></i></a>
+
+                                                <a href="#" style="color: blue;" id="editstatus" name="editstatus" class="editstatus-btn" data-id="{{ item.id }}" data-name="{{ item.name }}"><i class="fas fa-check-double"></i></a>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="7">Tidak ada data</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container-fluid" id="newfeedback" style="display:none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><b>Make Feedback</b></h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="feedbackForm" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" id="feedback_id" name="id">
+
+                            <div class="mb-3">
+                                <label class="form-label">Username</label>
+                                <input type="text" class="form-control" id="feedback_name" name="name" readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Gmail</label>
+                                <input type="text" class="form-control" id="feedback_gmail" name="gmail" readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Question</label>
+                                <textarea class="form-control" id="feedback_question" name="questions" rows="2" readonly></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Feedback</label>
+                                <textarea class="form-control" id="feedback_text" name="feedback" rows="4" required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" id="submitfeedback">Kirim Feedback</button>
+                            <button type="button" class="btn btn-secondary" id="cancelfeedback">Batal</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+<!--**********************************
+    Content body end
+***********************************-->
+{% endblock %}
+
+{% block footer %}
+{% include "footer.html" %}
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'allstatic/vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'allstatic/js/plugins-init/datatables.init.js' %}"></script>
+
+<script>
+    $(document).on("click", ".makefeedback-btn", function(event){
+        event.preventDefault();
+
+        let itemId = $(this).data("id");
+        let name = $(this).data("name");
+        let gmail = $(this).data("gmail");
+        let questions = $(this).data("questions");
+
+        Swal.fire({
+            icon: "info",
+            title: "Perhatian!",
+            text: `yakin ingin memberikan feedback untuk "${questions}"?`,
+            confirmButtonText: "OK",
+            showCancelButton: true,
+        }).then((result) => {
+                if (result.isConfirmed) {
+                $("#feedback_id").val(itemId);
+                $("#feedback_name").val(name);
+                $("#feedback_gmail").val(gmail);
+                $("#feedback_question").val(questions);
+
+                $("#newfeedback").stop(true, true).slideDown(200, function(){
+                    const top = $("#newfeedback").offset().top - 80;
+                    $("html, body").animate({ scrollTop: top }, 300, function(){
+                        $("#feedback_text").trigger("focus");
+                    });
+                });
+
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Proses tidak dilakukan!",
+                });
+            }
+        })
+    })
+
+    $(document).on("click", "#cancelfeedback", function(){
+        $("#newfeedback").slideUp(200, function(){
+            // 200 = durasi animasi dalam milidetik (200ms = 0.2 detik)
+
+            // Dapatkan posisi vertikal (jarak dari atas halaman) elemen #example
+            // offset().top = jarak dari atas dokumen ke elemen tersebut
+            const t = $("#example").offset().top - 80;
+            // -80 = supaya scroll berhenti sedikit di atas elemen
+
+            // Scroll halaman ke posisi t dengan animasi halus selama 300ms
+            $("html, body").animate({ scrollTop: t }, 300); 
+            // 300 = durasi scroll dalam milidetik
+        });
+    });
+
+    $(document).on("click", "#submitfeedback", function(event){
+        event.preventDefault();
+
+        let name = $("#feedback_name").val();
+        let gmail = $("#feedback_gmail").val();
+        let questions = $("#feedback_question").val();
+        let itemId = $("#feedback_id").val();
+        let textfeedback = $("#feedback_text").val();
+        let halaman = this;
+        Swal.fire({
+            icon: "info",
+            title: "Perhatian!",
+            text: `yakin ingin memberi balasan "${textfeedback}" ?`,
+            confirmButtonText: "OK",
+            showCancelButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#loading-overlay").css("display", "flex");
+                $.ajax({
+                    url: "{% url 'usermanagemessage' %}",
+                    type: "POST",
+                    data: {
+                        'id': itemId,
+                        'name': name,
+                        'feedback': textfeedback,
+                        'gmail': gmail,
+                        'questions': questions,
+                        'type': "tambahfeedback",
+                        'csrfmiddlewaretoken': "{{ csrf_token }}"
+                    },
+                    success: function (response) {
+                        $("#loading-overlay").hide();
+                        if (response.status === "success") {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Berhasil!",
+                                text: response.message,
+                                confirmButtonText: "OK",
+                                showCancelButton: true,
+                            }).then((result) => {
+                                window.location.href = "{% url 'usermanagemessage' %}";
+                            });
+                        } else {
+                            $("#loading-overlay").hide();
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: response.message,
+                            });
+                        }
+                    },
+                })
+            } else {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Proses tidak dilakukan!",
+            });
+            }
+        });
+    })
+
+    $(document).on("click", ".editstatus-btn", function(event){
+        event.preventDefault();
+
+        let itemId = $(this).data("id");
+        let nama = $(this).data("name");
+        let halaman = this;
+        Swal.fire({
+            icon: "info",
+            title: "Perhatian!",
+            text: `yakin ingin mengganti status data ${nama} ?`,
+            confirmButtonText: "OK",
+            showCancelButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#loading-overlay").css("display", "flex");
+                $.ajax({
+                    url: "{% url 'usermanagemessage' %}",
+                    type: "POST",
+                    data: {
+                        'id': itemId,
+                        'type': "gantistatus",
+                        'csrfmiddlewaretoken': "{{ csrf_token }}"
+                    },
+                    success: function (response) {
+                        $("#loading-overlay").hide();
+                        if (response.status === "success") {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Berhasil!",
+                                text: response.message,
+                                confirmButtonText: "OK",
+                                showCancelButton: true,
+                            }).then((result) => {
+                                window.location.href = "{% url 'usermanagemessage' %}";
+                            });
+                        } else {
+                            $("#loading-overlay").hide();
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: response.message,
+                            });
+                        }
+                    },
+                })
+            }else {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Proses tidak dilakukan!",
+            });
+            }
+        });
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,214 @@
+{% extends "dashboardbase.html" %}
+{% load static %}
+
+{% block style %}
+<link href="{% static 'allstatic/vendor/datatables/css/jquery.dataTables.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block header %}
+{% include "header.html" %}
+{% endblock %}
+
+{% block sidebar %}
+{% include "sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+<!--**********************************
+    Content body start
+***********************************-->
+    <div class="content-body" style="min-height: 700px;">
+        <div class="card-body" style="padding: 10px 10px 0 10px;">
+            <div class="alert alert-warning alert-dismissible fade show mt-2">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <strong>Warning!</strong> Untuk menjaga keamanan data anda, harap jangan membagikan API key anda!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
+                </button>
+            </div>
+            <div class="alert alert-info alert-dismissible fade show mt-1">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <strong>Info!</strong> sistem memerlukan waktu 3-5 menit untuk memproses data setelah disimpan, mohon menunggu!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
+                </button>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="col-12">
+                <div class="card">
+                    <div class="d-flex justify-content-end p-3">
+                        <a href="{% url 'formnewdatasave' %}" class="btn btn-primary"><b>New data</b></a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="example" class="display" style="min-width: 845px">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>API Key</th>
+                                        <th>Note</th>
+                                        <th>File</th>
+                                        <th>Language</th>
+                                        <th>Toxic Filter</th>
+                                        <th>Date Created</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in api_data %}
+                                        <tr>
+                                            <td>{{ item.title }}</td>
+                                            <td>{{ item.api_key|truncatechars:8 }}</td>
+                                            <!-- <td>{{ item.api_key }}</td> -->
+                                            <td>{{ item.note|truncatewords:5 }}</td>
+                                            <!-- <td>{{ item.note }}</td> -->
+                                            <td>
+                                                {% if item.file %}
+                                                    <a style="color: blue;" href="{{ item.file.url }}" target="_blank">Lihat PDF</a>
+                                                {% else %}
+                                                    Tidak ada file
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if item.language == "en" %}
+                                                    English
+                                                {% else %}
+                                                    Indonesia
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if item.toxic == "no" %}
+                                                    No
+                                                {% else %}
+                                                    Yes
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ item.date_joined|date:"Y-m-d H:i" }}</td>
+                                            <td>
+                                                <a href="#" style="color: blue;" class="view-btn" data-id="{{ item.id }}" name="view" id="view"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                                <a href="#" style="color: blue;" id="delete" name="delete" class="delete-btn" data-id="{{ item.id }}"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="6">Tidak ada data</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--**********************************
+    Content body end
+***********************************-->
+{% endblock %}
+
+{% block footer %}
+{% include "footer.html" %}
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'allstatic/vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'allstatic/js/plugins-init/datatables.init.js' %}"></script>
+
+<script>
+    $(document).on("click", ".view-btn", function(event){
+        event.preventDefault();
+
+        $("#loading-overlay").css("display", "flex");
+
+        let halaman = this;
+        let itemId = $(this).data("id");
+        $.ajax({
+            url: "{% url 'viewdataapi' %}",
+            type: "POST",
+            data: {
+                'id': itemId,
+                'csrfmiddlewaretoken': "{{ csrf_token }}"
+            },
+            success: function(response){
+                $("#loading-overlay").hide();
+                console.log("Response dari server:", response);
+                if(response.status == "success"){
+                    console.log("Tipe response.status:", typeof response.status);
+                    let data = response.data;
+                    Swal.fire({
+                        title: data.title,
+                        html: `<div class="card-body">
+                                <b>API Key:</b> <p style="text-align: left;"> ${data.api_key}</p>
+                                <b>Language:</b> <p style="text-align: left;"> ${data.language}</p>
+                                <b>Toxic Filter:</b> <p style="text-align: left;"> ${data.toxic}</p>
+                                <b>File:</b> <p style="text-align: left; color:blue;"> ${data.file ? `<a href="${data.file}" target="_blank">Lihat File</a>` : 'Tidak ada file'}</p>
+                                <b>Note:</b> <p style="text-align: left;"> ${data.note}</p>
+                               </div>`,
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $(halaman);
+                        }
+                    });
+                } else {
+                    $("#loading-overlay").hide();
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "data tidak dapat ditemukan!",
+                    });
+                }
+            },
+        })
+    })
+
+    $(document).on("click", ".delete-btn", function(event){
+        event.preventDefault();
+
+        let itemId = $(this).data("id");
+        let halaman = this;
+        Swal.fire({
+            icon: "info",
+            title: "Perhatian!",
+            text: "yakin ingin menhapus data ini?",
+            confirmButtonText: "OK",
+            showCancelButton: true,
+        }).then((result) => {
+            $("#loading-overlay").css("display", "flex");
+            $.ajax({
+                url: "{% url 'deletecoloumnapi' %}",
+                type: "POST",
+                data: {
+                    'id': itemId,
+                    'csrfmiddlewaretoken': "{{ csrf_token }}"
+                },
+                success: function (response) {
+                    $("#loading-overlay").hide();
+                    if (response.status === "success") {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Berhasil!",
+                            text: response.message,
+                            confirmButtonText: "OK",
+                            showCancelButton: true,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $(halaman).closest("tr").remove();
+                            }
+                        });
+                    } else {
+                        $("#loading-overlay").hide();
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: response.message,
+                        });
+                    }
+                },
+            })
+        });
+    })
+</script>
+{% endblock %}

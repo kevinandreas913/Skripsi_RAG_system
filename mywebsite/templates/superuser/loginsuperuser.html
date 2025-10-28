@@ -1,0 +1,135 @@
+{% extends "dashboardbase.html" %}
+{% load static %}
+
+{% block style %}
+{% endblock %}
+
+{% block content %}
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="authincation h-100">
+    <div class="container h-100">
+        <div class="row justify-content-center h-100 align-items-center">
+            <div class="col-md-6">
+                <div class="authincation-content mt-5">
+                    <div class="row no-gutters">
+                        <div class="col-xl-12">
+                            <div class="auth-form">
+                                <div class="text-center mb-3">
+                                    <h1 style="color: #167ae6; font-weight: 1000;">HELLO SUPERADMIN</h1>
+                                </div>
+                                <h4 class="text-center mb-4">Sign in your account</h4>
+                                <form method="post" id="login">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label class="mb-1"><strong>Username</strong></label>
+                                        <input type="text" class="form-control" placeholder="username" id="nama" name="username">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="mb-1"><strong>Password</strong></label>
+                                        <input type="password" class="form-control" placeholder="Password" id="password" name="password">
+                                    </div>
+                                    <div class="row d-flex justify-content-between mt-4 mb-2">
+                                        <div class="mb-3">
+                                            <a href="{% url 'forgotpassword' %}" style="color: blue;">Forgot Password?</a>
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary btn-block" id="submitlogin">Sign Me In</button>
+                                    </div>
+                                </form>
+                                <div class="new-account mt-3">
+                                    <p>Don't have an account? <a class="text-primary" style="color: blue;" href="{% url 'signup' %}">Sign up</a></p>
+                                </div>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary btn-block" id="halamanutama"  >Home</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--**********************************
+    Content body end
+***********************************-->
+{% endblock %}
+
+
+{% block script %}
+<script>
+    $("#submitlogin").click(function(event) {
+        event.preventDefault();
+
+        function validate(){
+            const nama = $("#nama").val();
+            if (!nama.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Inputkan nama akun terlebih dahulu!",
+                });
+                return false;
+            }
+
+            const password = $("#password").val();
+            if (!password.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Inputkan password terlebih dahulu!",
+                });
+                return false;
+            }
+            return true;
+        }
+
+        if (!validate()) {
+            return true;
+        }
+
+        $("#loading-overlay").css("display", "flex");
+
+        $.ajax({
+            url: "{% url 'loginsuperuser' %}",
+            type: "POST",
+            data: {
+                username: $("#nama").val(),
+                password: $("#password").val(),
+                csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+            },
+            success: function(response){
+                $("#loading-overlay").hide();
+                if(response.status === "success"){
+                    let nama = response.user.username;
+                    Swal.fire({
+                        icon: "success",
+                        title: "Login Berhasil!",
+                        text: "Selamat datang, " + nama,
+                        confirmButtonText: "OK",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "{% url 'dashboardsuperuser' %}";
+                        }
+                    });
+                } else {
+                    $("#loading-overlay").hide();
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: response.message,
+                    });
+                }
+            },
+        })
+    });
+
+    $("#halamanutama").click(function(event) {
+        event.preventDefault();
+        window.location.href = "{% url 'landingpage' %}";
+    });
+</script>
+{% endblock %}

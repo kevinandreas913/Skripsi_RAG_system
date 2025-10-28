@@ -1,0 +1,125 @@
+{% load static %}
+<!--**********************************
+    Sidebar start
+***********************************-->
+<div class="dlabnav">
+    {% if request.user.is_superuser %}
+    <div class="dlabnav-scroll">
+        <ul class="metismenu" id="menu">
+            <li><a href="{% url 'dashboardsuperuser' %}" class="" aria-expanded="false">
+                    <i class="fas fa-home"></i>
+                    <span class="nav-text"> Dashboard </span>
+                </a>
+            </li>
+            <li><a href="{% url 'usermanagement' %}" class="" aria-expanded="false">
+                    <i class="fas fa-users-cog"></i>
+                    <span class="nav-text">User Management</span>
+                </a>
+            </li>
+            <li><a href="{% url 'usermanagemessage' %}" class="" aria-expanded="false">
+                    <i class="fab fa-stack-exchange"></i>
+                    <span class="nav-text">User Manage Message</span>
+                </a>
+            </li>
+            <li><a class="has-arrow " href="javascript:void()" aria-expanded="false">
+                    <i class="fas fa-user-check"></i>
+                    <span class="nav-text">User</span>
+                </a>
+                <ul aria-expanded="false">
+                    <li><a href="{% url 'pagesetting' %}">Setting</a></li>
+                    <li><a href="{% url 'logout' %}">Log Out</a></li>
+                </ul>
+            </li>
+            
+        </ul>
+        <div class="side-bar-profile">
+            <div class="d-flex align-items-center mb-3">
+                <div class="side-bar-profile-img">
+                    {% if profile %}
+                        <img src="{{ profile }}" alt="Foto Profil">
+                    {% else %}
+                        <img src="{% static 'allstatic/images/pic1.jpg' %}" alt="default foto">
+                    {% endif %}
+                </div>
+                <div class="profile-info1" style="padding: 0px 0px 0px 30px;">
+                    <h4 class="fs-18 font-w500">{{ username }}</h4>
+                    <span>{{ gmail }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p><strong>CHAPI</strong></p>
+            <p class="fs-12">Design modified by Andreas Kevin</p>
+        </div>
+    </div>
+    {% else %}
+        <div class="dlabnav-scroll">
+            <ul class="metismenu" id="menu">
+                <li><a href="{% url 'dashboard' %}" class="" aria-expanded="false">
+                        <i class="fas fa-home"></i>
+                        <span class="nav-text"> Dashboard </span>
+                    </a>
+                </li>
+                <li><a href="{% url 'tableapiuser' %}" class="" aria-expanded="false">
+                        <i class="fas fa-user-check"></i>
+                        <span class="nav-text">Table API</span>
+                    </a>
+                </li>
+                <li><a href="{% url 'tryapi' %}" class="" aria-expanded="false">
+                        <i class="fas fa-file-alt"></i>
+                        <span class="nav-text">Try API</span>
+                    </a>
+                </li>
+                
+                <li>
+                    <a class="has-arrow " href="javascript:void()" aria-expanded="false">
+                    <i class="fas fa-info-circle"></i>
+                        <span class="nav-text">Documentation</span>
+                    </a>
+                    <ul aria-expanded="false">
+                        <li><a href="{% url 'docpython' %}">Python</a></li>
+                        <li><a href="{% url 'docphp' %}">PHP</a></li>
+                        <li><a href="{% url 'docjs' %}">JavaScript</a></li>
+                    </ul>
+                </li>
+
+                <li><a class="has-arrow " href="javascript:void()" aria-expanded="false">
+                        <i class="fas fa-user-check"></i>
+                        <span class="nav-text">User</span>
+                    </a>
+                    <ul aria-expanded="false">
+                        <li><a href="{% url 'pagesetting' %}">Setting</a></li>
+                        <li><a href="{% url 'logout' %}">Log Out</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="side-bar-profile">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="side-bar-profile-img">
+                        {% if profile %}
+                            <img src="{{ profile }}" alt="Foto Profil">
+                        {% else %}
+                            <img src="{% static 'allstatic/images/pic1.jpg' %}" alt="default foto">
+                        {% endif %}
+                    </div>
+                    <div class="profile-info1" style="padding: 0px 0px 0px 30px;">
+                        <h4 class="fs-18 font-w500">{{ username }}</h4>
+                        <span>{{ gmail }}</span>
+                    </div>
+                    
+                </div>
+                
+            </div>
+            
+            <div class="copyright">
+                <p><strong>CHAPI</strong></p>
+                <p class="fs-12">Design modified by Andreas Kevin</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+<!--**********************************
+    Sidebar end
+***********************************-->

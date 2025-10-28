@@ -1,0 +1,202 @@
+{% extends "dashboardbase.html" %}
+{% load static %}
+
+{% block style %}
+{% endblock %}
+
+{% block header %}
+{% include "header.html" %}
+{% endblock %}
+
+{% block sidebar %}
+{% include "sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+<!--**********************************
+    Content body start
+***********************************-->
+    <div class="content-body" style="min-height: 700px;">
+        <div class="card-body" style="padding: 10px;">
+            <div class="alert alert-warning alert-dismissible fade show mt-1">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <strong>Warning!</strong> Setelah melakukan save harap menunggu selama 3 menit sebelum menggunakan API, sistem sedang mempersiapkan API anda!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
+                </button>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Create New API Document</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" id="newdataapi">
+                            {% csrf_token %}
+                            <span>Tilte*</span>
+                            <div class="mb-3">
+                                <input type="text" class="form-control input-default " placeholder="input title here" id="title" name="title">
+                            </div>
+                            <span class="">Upload your file here*</span>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Upload</span>
+                                <div class="form-file">
+                                    <input type="file" class="form-file-input form-control" accept=".pdf" id="pdf_file" name="file" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Default Language Pdf</label>
+                                <select class="default-select  form-control wide mb-3" id="language" name="language">
+                                    <option value="0" disabled selected>-- Pilih Bahasa --</option>
+                                    <option value="id">Indonesia</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Filter Toxic Question</label>
+                                <select class="default-select  form-control wide mb-3" id="toxic" name="toxic">
+                                    <option value="0" disabled selected>-- Pilih Filter --</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <span>Note</span>
+                                <div class="mb-3">
+                                    <textarea class="form-control" rows="4" id="note" name="note"></textarea>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-rounded btn-primary text-center mt-3" id="submit_document">submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--**********************************
+    Content body end
+***********************************-->
+{% endblock %}
+
+{% block footer %}
+{% include "footer.html" %}
+{% endblock %}
+
+{% block script %}
+<script>
+    $("#submit_document").click(function(event){
+        event.preventDefault()
+
+        function validate(){
+            const title = $("#title").val();
+            if (!title.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Inputkan title terlebih dahulu!",
+                });
+                return false;
+            }
+
+            const pdf = $("#pdf_file")[0];
+            const file = pdf.files[0];
+            if(!file){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Masukkan file anda terlebih dahulu!",
+                });
+                return false;
+            }
+
+            const language = $("#language").val();
+            if(!language || language === "0"){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Silakan pilih bahasa default PDF!",
+                });
+                return false;
+            }
+
+            const toxic = $("#toxic").val();
+            if(!toxic || toxic === "0"){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Silakan pilih filter pertanyaan!",
+                });
+                return false;
+            }
+
+            if(file.type != "application/pdf"){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "File harus berformat pdf!",
+                });
+                return false;
+            }
+
+            return true;
+        }
+
+        if(!validate()){
+            return true;
+        }
+
+        // Tampilkan overlay & disable semua klik
+        $("#loading-overlay").css("display", "flex");
+
+        // FormData perlu jika mengirim file (bukan sekedar text)
+        let formdata = new FormData();
+        formdata.append("title", $("#title").val());
+        formdata.append("file", $("#pdf_file")[0].files[0]);
+        formdata.append("note", $("#note").val());
+        formdata.append("language", $("#language").val());
+        formdata.append("toxic", $("toxic").val())
+        formdata.append("csrfmiddlewaretoken", $("input[name='csrfmiddlewaretoken']").val());
+        $.ajax({
+            url: "{% url 'formnewdatasave' %}",
+            type: "POST",
+            data: formdata,
+            processData: false, // agar jQuery tidak memproses data jadi string
+            contentType: false, //agar jQuery tidak set content-type ke application/x-www-form-urlencoded
+
+            success: function(response){
+                $("#loading-overlay").hide();
+                if(response.status === "success"){
+                    Swal.fire({
+                        icon: "success",
+                        title: "Berhasil!",
+                        text: "Berhasil menyimpan, silahkan tunggu minimal 5 menit sebelum menggunakan API anda!",
+                        confirmButtonText: "OK",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "{% url 'tableapiuser' %}";
+                        }
+                    });
+                } else {
+                    $("#loading-overlay").hide();
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: response.message,
+                    });
+                }
+            },
+            error: function(){
+                $("#loading-overlay").hide();
+                Swal.fire({ icon: "error", title: "Oops...", text: "Terjadi kesalahan saat request!" });
+            }
+        })
+
+    })
+</script>
+{% endblock %}

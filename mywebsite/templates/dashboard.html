@@ -1,0 +1,98 @@
+{% extends "dashboardbase.html" %}
+{% load static %}
+
+{% block style %}
+<style>
+    .data-costum-container-byandreas {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px; /* jarak antar card */
+        justify-content: center;
+        padding: 10px;
+    }
+
+    .costum-card-byandreas {
+        flex: 1 1 300px; /* minimal lebar 300px, sisanya menyesuaikan */
+        max-width: 320px;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
+    }
+
+    .costum-card-byandreas:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .costum-card-image-byandreas img {
+        width: 100%;
+        height: auto;
+        max-height: 250px;
+        object-fit: cover;
+    }
+
+    .costum-card-info-byandreas {
+        padding: 15px;
+    }
+
+</style>
+{% endblock %}
+
+{% block header %}
+{% include "header.html" %}
+{% endblock %}
+
+{% block sidebar %}
+{% include "sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+<!--**********************************
+    Content body start
+***********************************-->
+    <div class="content-body" > 
+        <div class="card-body" style="padding: 20px;">
+            <!-- <div class="text-center mb-4">
+                {% if profile %}
+                    <img src="{{ profile }}" alt="Foto Profil" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+                {% else %}
+                    <img src="{% static 'allstatic/images/pic1.jpg' %}" alt="Default Foto Profil" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+                {% endif %}
+            </div> -->
+
+            <div class="text-center">
+                <h2 style="color:#007bff; font-weight:900;">{{ username }}</h2>
+                <p>{{ gmail }}</p>
+            </div>
+
+            <hr>
+
+            <div class="data-costum-container-byandreas">
+                <div class="costum-card-byandreas">
+                    <div class="costum-card-image-byandreas">
+                        <img src="{% static 'allstatic/images/apikey.jpg' %}" alt="API Key">
+                    </div>
+                    <div class="costum-card-info-byandreas">
+                        <h2>Data API Anda</h2>
+                        <h4>Total API yang dimiliki: <strong>{{ totalapi }}</strong></h4>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+
+
+<!--**********************************
+    Content body end
+***********************************-->
+{% endblock %}
+
+{% block footer %}
+{% include "footer.html" %}
+{% endblock %}

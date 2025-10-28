@@ -1,0 +1,119 @@
+{% extends "dashboardbase.html" %}
+{% load static %}
+
+{% block style %}
+<style>
+    .profile-container-byandreas {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, max-content));
+        justify-content: center;
+        gap: 30px;
+        padding: 40px;
+    }
+
+    .profile-card-byandreas {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        max-width: 600px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .profile-card-byandreas:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .profile-photo-byandreas {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 0 auto 20px;
+        border: 4px solid #007bff;
+    }
+
+    .profile-photo-byandreas img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-name-byandreas {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: #007bff;
+    }
+
+    .profile-email-byandreas {
+        font-size: 1rem;
+        color: #555;
+        margin-bottom: 20px;
+    }
+
+    .profile-btn-byandreas {
+        background: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: background 0.3s ease, transform 0.2s ease;
+        display: inline-block;
+    }
+
+    .profile-btn-byandreas:hover {
+        background: #0056b3;
+        transform: scale(1.05);
+    }
+
+</style>
+{% endblock %}
+
+{% block header %}
+{% include "header.html" %}
+{% endblock %}
+
+{% block sidebar %}
+{% include "sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+<!--**********************************
+    Content body start
+***********************************-->
+    <div class="content-body" > 
+        <div class="profile-container-byandreas">
+            <div class="profile-card-byandreas">
+                <!-- Foto -->
+                <div class="profile-photo-byandreas">
+                    {% if profile %}
+                        <img src="{{ profile }}" alt="Foto Profil">
+                    {% else %}
+                        <img src="{% static 'allstatic/images/pic1.jpg' %}" alt="default foto">
+                    {% endif %}
+                </div>
+
+                <!-- Username -->
+                <div class="profile-name-byandreas">{{ username }}</div>
+
+                <!-- Email -->
+                <div class="profile-email-byandreas">{{ gmail }}</div>
+
+                <!-- Button Setting -->
+                <a href="{% url 'pagesetting' %}" class="profile-btn-byandreas">Setting</a>
+            </div>
+        </div>
+    </div>
+
+
+<!--**********************************
+    Content body end
+***********************************-->
+{% endblock %}
+
+{% block footer %}
+{% include "footer.html" %}
+{% endblock %}

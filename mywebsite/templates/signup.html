@@ -1,0 +1,250 @@
+{% extends "dashboardbase.html" %}
+{% load static %}
+
+{% block style %}
+{% endblock %}
+
+{% block content %}
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="authincation h-100">
+    <div class="container h-100">
+        <div class="row justify-content-center h-100 align-items-center">
+            <div class="col-md-6">
+                <div class="authincation-content">
+                    <div class="row no-gutters">
+                        <div class="col-xl-12">
+                            <div class="auth-form">
+                                <div class="text-center mb-3">
+                                    <h1 style="color: #167ae6; font-weight: 1000;">HELLO USER</h1>
+                                </div>
+                                <h4 class="text-center mb-4">Sign up your account</h4>
+                                <form method="post" id="registerform">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label class="mb-1"><strong>Username</strong></label>
+                                        <input type="text" class="form-control" placeholder="username" id="nama" name="username" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="mb-1"><strong>Email</strong></label>
+                                        <input type="email" class="form-control" placeholder="hello@example.com" id="email" name="gmail" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="mb-1"><strong>Password</strong></label>
+                                        <input type="password" class="form-control" placeholder="Password" id="password" name="password" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="mb-1"><strong>Confirm Password</strong></label>
+                                        <input type="password" class="form-control" placeholder="Confirm your Password" id="retypepassword" required>
+                                    </div>
+                                    <label class="mb-1"><strong>Photo</strong></label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">Upload</span>
+                                        <div class="form-file">
+                                            <input type="file" class="form-file-input form-control" accept=".jpg, .jpeg, .png" id="photo_file" name="file" placeholder="ukuran maksimal file 2mb" required>
+                                        </div>
+                                    </div>
+                                    <div class="icheck-primary mt-3" id="checkagree">
+                                        <input type="checkbox" id="agreeTerms" name="terms" value="agree">
+                                        <label for="agreeTerms">
+                                            I agree to create an account <a href="#">terms</a>
+                                        </label>
+                                        <span id="agreeError" style="color: red; display: none;">You must agree to the terms!</span>
+                                    </div>
+                                    <a href="#" style="color: blue">read terms here</a>
+                                    <div class="mb-4 mt-3 text-center">
+                                        <button type="submit" class="btn btn-primary btn-block" id="signup">Sign me up</button>
+                                    </div>
+                                </form>
+                                <div class="new-account mt-3">
+                                    <p>Already have an account? <a class="text-primary" href="{% url 'login' %}">Sign in</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--**********************************
+    Content body end
+***********************************-->
+{% endblock %}
+
+{% block script %}
+<script>
+    $("#signup").click(function (event) {
+        event.preventDefault();
+
+        function validate() {
+            const nama = $("#nama").val();
+            if (!nama.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Inputkan nama terlebih dahulu!",
+                });
+                return false;
+            }
+            if (nama.length > 20) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Nama maksimal 20 karakter!",
+                });
+                return false;
+            }
+
+            const email = $("#email").val();
+            if (!email.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Inputkan email terlebih dahulu!",
+                });
+                return false;
+            } 
+            if (!email.includes("@")) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Email harus mengandung @gmail atau @company!",
+                });
+                return false;
+            } 
+
+            const password = $("#password").val();
+            if (!password.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Inputkan password terlebih dahulu!",
+                });
+                return false;
+            }
+            if (password.length <= 7) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Password minimal 8 karakter!",
+                });
+                return false;
+            }
+            if (password.length >= 25) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Password maximal 25 karakter!",
+                });
+                return false;
+            }
+
+            const retypepassword = $("#retypepassword").val();
+            if (!retypepassword.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Harap ulangi password!",
+                });
+                return false;
+            }
+            
+
+            const photo = $("#photo_file")[0];
+            const file = photo.files[0];
+            if(!file){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Masukkan foto anda terlebih dahulu!",
+                });
+                return false;
+            }
+            const allowedTypes = ["image/jpeg", "image/png"];
+            if (!allowedTypes.includes(file.type)) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "File harus berformat JPG, JPEG, atau PNG!",
+                });
+                return false;
+            }
+            const maxSize = 2 * 1024 * 1024; // 2 MB dalam byte
+            if (file.size > maxSize) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Ukuran file maksimal 2 MB!",
+                });
+                return false;
+            }
+
+            const agreeTerms = $("#agreeTerms").is(":checked");
+            if (!agreeTerms) {
+                $("#agreeError").show(); 
+                return false;
+            } else {
+                $("#agreeError").hide(); 
+            }
+
+            if (retypepassword.trim() !== password.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Password dan ulangi password harus sama!",
+                });
+                return false;
+            }
+            return true;
+        }
+
+        if (!validate()) {
+            return true;
+        }
+
+        $("#loading-overlay").css("display", "flex");
+
+        let formdata = new FormData();
+        formdata.append("username", $("#nama").val());
+        formdata.append("filephoto", $("#photo_file")[0].files[0]);
+        formdata.append("password", $("#password").val());
+        formdata.append("gmail", $("#email").val());
+        formdata.append("csrfmiddlewaretoken", $("input[name='csrfmiddlewaretoken']").val());
+        $.ajax({
+            url: "{% url 'signup' %}",
+            type: "POST",
+            data: formdata,
+            processData: false, // agar jQuery tidak memproses data jadi string
+            contentType: false, //agar jQuery tidak set content-type ke application/x-www-form-urlencoded
+
+            success: function (response) {
+                $("#loading-overlay").hide();
+                if (response.status == "success") {
+                    let tambah = response.users.username;
+                    tambah += "\n" + response.message;
+                    Swal.fire({
+                        icon: "success",
+                        title: "Berhasil!",
+                        text: tambah,
+                        confirmButtonText: "OK",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "{% url 'login' %}";
+                        }
+                    });
+                } else {
+                    $("#loading-overlay").hide();
+                    let errorMessage = response.message;
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: errorMessage,
+                    });
+                }
+            },
+        })
+    });
+</script>
+{% endblock %}

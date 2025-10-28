@@ -1,0 +1,370 @@
+{% extends "dashboardbase.html" %}
+{% load static %}
+
+{% block style %}
+<link href="{% static 'allstatic/vendor/datatables/css/jquery.dataTables.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block header %}
+{% include "header.html" %}
+{% endblock %}
+
+{% block sidebar %}
+{% include "sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+<!--**********************************
+    Content body start
+***********************************-->
+    <div class="content-body" style="min-height: 700px;">
+        <div class="card-body" style="padding: 10px;">
+            <div class="alert alert-warning alert-dismissible fade show mt-2">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <strong>Warning!</strong> Untuk menjaga keamanan data anda, harap jangan membagikan API key anda!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
+                </button>
+            </div>
+            <div class="alert alert-info alert-dismissible fade show mt-1">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <strong>Info!</strong> masukkan API yang telah anda buat sebelumnya dan kemudian coba chat disini!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="btn-close"></button>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="card" id="inputkodeapi">
+                <div class="card-header">
+                    <h4 class="card-title">Input API</h4>
+                </div>
+                <div class="card-body">
+                    <div class="basic-form">
+                        <form>
+                            <div class="d-flex mb-3">
+                                <input class="form-control me-2" type="text" placeholder="Copy and paste your API key into here!" id="apitext">
+                                <button type="submit" class="btn btn-primary submitapibtn" id="submitapi" name="submitapi">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row d-none" type="hidden" id="chatdisini" name="chatdisini">
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <div class="row">
+                                <div class="col-xl-12 col-xxl-12">
+                                    <div class="d-flex justify-content-between align-items-center border-bottom px-4 pt-4 flex-wrap">
+                                        <div class="d-flex align-items-center pb-3">
+                                            <div class="fillow-design">
+                                                <a href="javascript:void(0);"><i class="fab fa-facebook-f"></i></a>
+                                            </div>
+                                            <div class="ms-3">
+                                                <h4 class="fs-20 font-w700" id="chattitle"></h4>
+                                                <span>Let's try your project here!</span>
+                                            </div>
+                                        </div>
+                                        <div style="max-width: 400px; width: 100%;">
+                                            <input class="form-control" id="apikeymuncul" type="text" placeholder="API Key" disabled>
+                                        </div>
+
+                                    </div>	
+                                    <div class="chat-box-area dlab-scroll chat-box-area mt-2" style="text-align: right;" id="chatArea">
+                                        <div class="chat-box-area dz-scroll" id="chartBox">
+                                            <!-- Pesan nantinya ada disini -->
+                                        </div>
+                                    </div>
+                                    <div class="card-footer border-0 d-flex align-items-center gap-2">
+                                        <textarea class="form-control me-2" id="exampleFormControlTextarea1" rows="2"
+                                            placeholder="Masukkan pertanyaan disini!" style="resize: none; flex-grow: 1;"></textarea>
+                                        
+                                        <button type="button" class="btn btn-primary rounded text-white" id="sendpesan">
+                                            <i class="far fa-paper-plane me-2"></i> SEND
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--**********************************
+    Content body end
+***********************************-->
+{% endblock %}
+
+{% block footer %}
+{% include "footer.html" %}
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'allstatic/vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'allstatic/js/plugins-init/datatables.init.js' %}"></script>
+
+<script>
+    $(document).on("click", ".submitapibtn", function(event){
+        event.preventDefault();
+
+        function validate(){
+            const nama = $("#apitext").val().trim();
+            if (!nama.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Inputkan API key terlebih dahulu!",
+                });
+                return false;
+            }
+            return true;
+        }
+
+        if (!validate()){
+            return true;
+        }
+
+        let halaman = this;
+        let itemapiID = $("#apitext").val();
+        $.ajax({
+            url: "{% url 'tryapi' %}",
+            type: "POST",
+            data: {
+                'api_key': itemapiID,
+                'csrfmiddlewaretoken': "{{ csrf_token }}"
+            },
+            success: function(response){
+                console.log("Response dari server:", response);
+                if(response.status == "success"){
+                    console.log("Tipe response.status:", typeof response.status);
+                    let data = response.data;
+                    Swal.fire({
+                        title: "Berhasil!",
+                        text: "API Berhasil ditemukan",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // $(halaman);
+                            $("#inputkodeapi").hide();
+                            $("#chattitle").text(data.title);
+                            $("#apikeymuncul").val(data.api_key);
+                            $("#chatdisini").removeClass("d-none");
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "data API tersebut tidak dapat ditemukan. Apabila baru mendaftarkan API harap tunggu 1-2 menit atau hapus data API kemudian coba lagi!",
+                    });
+                }
+            },
+        });
+    });
+
+    // $('#sendpesan').on('click', function () {
+    //     const pesan = $('#exampleFormControlTextarea1').val().trim();
+    //     const apikey = $('#apikeymuncul').val().trim();
+
+    //     function validate(){
+    //         if (!pesan.trim()) {
+    //             Swal.fire({
+    //                 icon: "error",
+    //                 title: "Oops...",
+    //                 text: "Masukkan pesan terlebih dahulu!",
+    //             });
+    //             return false;
+    //         }
+
+    //         if (!apikey.trim()) {
+    //             Swal.fire({
+    //                 icon: "error",
+    //                 title: "Oops...",
+    //                 text: "Jangan hapus data pada kolom API key!",
+    //             });
+    //             return false;
+    //         }
+    //         return true;
+
+    //     }
+
+    //     if (!validate()){
+    //         return true;
+    //     }
+        
+
+    //     $('#chartBox').append(`
+    //         <div class="d-flex justify-content-end mb-2">
+    //             <div class="bg-primary text-white p-2 rounded" style="max-width: 75%;">
+    //                 ${pesan}
+    //             </div>
+    //         </div>
+    //     `);
+    //     $('#exampleFormControlTextarea1').val('');
+    //     $('#chartBox').scrollTop($('#chartBox')[0].scrollHeight);
+
+    //     // efek mengetik
+    //     const loadingElement = $(`
+    //         <div id="loadingMsg" class="d-flex justify-content-start mb-2">
+    //             <div class="bg-light border p-2 rounded" style="max-width: 75%;">
+    //                 <em>Sedang mengetik...</em>
+    //             </div>
+    //         </div>
+    //     `);
+    //     $('#chartBox').append(loadingElement);
+    //     $('#chartBox').scrollTop($('#chartBox')[0].scrollHeight);
+        
+    //     $.ajax({
+    //         url: "{% url 'proseschat' %}",
+    //         type: "POST",
+    //         data: {
+    //             'message': pesan,
+    //             'api_key': apikey,
+    //             'csrfmiddlewaretoken': '{{ csrf_token }}'
+    //         },
+    //         success: function(response){
+    //             $('#loadingMsg').remove(); 
+
+    //             $('#chartBox').append(`
+    //                 <div class="d-flex justify-content-start mb-2">
+    //                     <div class="bg-light border p-2 rounded" style="max-width: 75%;">
+    //                         ${response.message}
+    //                     </div>
+    //                 </div>
+    //             `);
+    //             $('#chartBox').scrollTop($('#chartBox')[0].scrollHeight);
+    //         },
+    //         error: function(){
+    //             $('#loadingMsg').remove();
+
+    //             $('#chartBox').append(`
+    //             <div class="d-flex justify-content-start mb-2">
+    //                 <div class="bg-danger text-white p-2 rounded" style="max-width: 75%;">
+    //                     Gagal mendapatkan respon dari server.
+    //                 </div>
+    //             </div>
+    //             `);
+    //         }
+    //     });
+    // });
+
+    $('#sendpesan').on('click', function () {
+        const pesan = $('#exampleFormControlTextarea1').val().trim();
+        const apikey = $('#apikeymuncul').val().trim();
+
+        function validate(){
+            if (!pesan.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Masukkan pesan terlebih dahulu!",
+                });
+                return false;
+            }
+
+            if (!apikey.trim()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Jangan hapus data pada kolom API key!",
+                });
+                return false;
+            }
+            return true;
+
+        }
+
+        if (!validate()){
+            return true;
+        }
+        
+
+        $('#chartBox').append(`
+            <div class="d-flex justify-content-end mb-2">
+                <div class="bg-primary text-white p-2 rounded" style="max-width: 75%;">
+                    ${pesan}
+                </div>
+            </div>
+        `);
+        $('#exampleFormControlTextarea1').val('');
+        $('#chartBox').scrollTop($('#chartBox')[0].scrollHeight);
+
+        // efek mengetik
+        const loadingElement = $(`
+            <div id="loadingMsg" class="d-flex justify-content-start mb-2">
+                <div class="bg-light border p-2 rounded" style="max-width: 75%;">
+                    <em>Sedang mengetik...</em>
+                </div>
+            </div>
+        `);
+        $('#chartBox').append(loadingElement);
+        $('#chartBox').scrollTop($('#chartBox')[0].scrollHeight);
+        
+        $.ajax({
+            url: "{% url 'proseschat' %}",
+            type: "POST",
+            data: JSON.stringify({
+                'message': pesan,
+                'api_key': apikey,
+            }),
+            contentType: "application/json",
+            dataType: "json",
+            headers: {
+                "X-CSRFToken": '{{ csrf_token }}'
+            },
+            success: function(response){
+                $('#loadingMsg').remove(); 
+
+                $('#chartBox').append(`
+                    <div class="d-flex justify-content-start mb-2">
+                        <div class="bg-light border p-2 rounded" style="max-width: 75%;">
+                            ${response.message}
+                        </div>
+                    </div>
+                `);
+                $('#chartBox').append(`
+                    <div class="d-flex justify-content-start mb-2">
+                        <div class="bg-light border p-2 rounded" style="max-width: 75%;">
+                            <h5>Teks Asli</h5>
+                            ${response.lengkap}
+                        </div>
+                    </div>
+                `);
+                if (response.topk && response.topk.length > 0) {
+                    let topkHtml = `<div class="bg-light border p-2 rounded" style="max-width: 75%;">
+                        <h5>Top 3 Hasil Pencarian</h5>
+                        <ol>`;
+                    response.topk.forEach(function(item) {
+                        topkHtml += `<li>
+                            <strong>Score:</strong> ${item[1].toFixed(3)}<br>
+                            ${item[0]}
+                        </li>`;
+                    });
+                    topkHtml += `</ol></div>`;
+
+                    $('#chartBox').append(`
+                        <div class="d-flex justify-content-start mb-2">
+                            ${topkHtml}
+                        </div>
+                    `);
+                }
+                $('#chartBox').scrollTop($('#chartBox')[0].scrollHeight);
+            },
+            error: function(){
+                $('#loadingMsg').remove();
+
+                $('#chartBox').append(`
+                <div class="d-flex justify-content-start mb-2">
+                    <div class="bg-danger text-white p-2 rounded" style="max-width: 75%;">
+                        Gagal mendapatkan respon dari server.
+                    </div>
+                </div>
+                `);
+            }
+        });
+    });
+</script>
+{% endblock %}
