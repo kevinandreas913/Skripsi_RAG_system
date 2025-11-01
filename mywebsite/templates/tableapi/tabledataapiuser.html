@@ -175,39 +175,42 @@
             text: "yakin ingin menhapus data ini?",
             confirmButtonText: "OK",
             showCancelButton: true,
+            cancelButtonText: "Batal"
         }).then((result) => {
-            $("#loading-overlay").css("display", "flex");
-            $.ajax({
-                url: "{% url 'deletecoloumnapi' %}",
-                type: "POST",
-                data: {
-                    'id': itemId,
-                    'csrfmiddlewaretoken': "{{ csrf_token }}"
-                },
-                success: function (response) {
-                    $("#loading-overlay").hide();
-                    if (response.status === "success") {
-                        Swal.fire({
-                            icon: "success",
-                            title: "Berhasil!",
-                            text: response.message,
-                            confirmButtonText: "OK",
-                            showCancelButton: true,
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $(halaman).closest("tr").remove();
-                            }
-                        });
-                    } else {
+            if (result.isConfirmed) {
+                $("#loading-overlay").css("display", "flex");
+                $.ajax({
+                    url: "{% url 'deletecoloumnapi' %}",
+                    type: "POST",
+                    data: {
+                        'id': itemId,
+                        'csrfmiddlewaretoken': "{{ csrf_token }}"
+                    },
+                    success: function (response) {
                         $("#loading-overlay").hide();
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: response.message,
-                        });
-                    }
-                },
-            })
+                        if (response.status === "success") {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Berhasil!",
+                                text: response.message,
+                                confirmButtonText: "OK",
+                                showCancelButton: true,
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $(halaman).closest("tr").remove();
+                                }
+                            });
+                        } else {
+                            $("#loading-overlay").hide();
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: response.message,
+                            });
+                        }
+                    },
+                })
+            }
         });
     })
 </script>

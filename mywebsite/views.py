@@ -15,6 +15,7 @@ from django_q.tasks import async_task
 from .process.save_pdf_to_embedding_vector import proses_dan_simpan_ke_qdrant
 from .process.delete_data_qdrant import *
 from .process.answer_qdrant import *
+from .process.hate_speech_detection import *
 from .utils import generate_otp, verify_otp
 
 from django.conf import settings
@@ -498,49 +499,80 @@ def tryapi(request):
 
 @csrf_exempt
 def proseschat(request):
-    if request.method == 'POST':
-        try:
-            body = json.loads(request.body)
-            apikey = body.get('api_key', None)
-            question = body.get('message', None)
+    if request.method != 'POST':
+        return JsonResponse({
+            'status': 'fail',
+            'message': 'Format request harus POST'
+        })
 
-            if not apikey or not question:
-                return JsonResponse({
-                    'status': 'fail', 
-                    'message': 'API key dan message wajib diisi'
-                })
+    try:
+        body = json.loads(request.body)
+        apikey = body.get('api_key')
+        question = body.get('message')
 
-            all_data_in_apikey = TbAPI.objects.get(api_key=apikey)
-            bahasa = all_data_in_apikey.language
-
-            jawaban, kutipan3, topk = qdrant_answer(pertanyaan=question, pdf_id=apikey, bahasa_pdf=bahasa)
-            print("dari views, kutipan adalah, ", kutipan3)
-
-            return JsonResponse({
-                'status': 'success',
-                'message': jawaban,
-                'lengkap': kutipan3,
-                'topk': topk
-            })
-        
-        except json.JSONDecodeError:
-            return JsonResponse({
-                'status': 'fail', 
-                'message': 'Format JSON tidak valid'
-            })
-        
-        except Exception as e:
-            print("Error gagal dikarenakan = ", e)
+        if not apikey or not question:
             return JsonResponse({
                 'status': 'fail',
-                'message': 'gagal',
+                'message': 'API key dan message wajib diisi'
             })
+        
 
-    # return render(request, 'tryapi/pagetry.html', {"namepage": "Try API"})
-    return JsonResponse({
-        'status': 'fail', 
-        'message': 'Format request harus POST'
-    })
+        all_data_in_apikey = TbAPI.objects.get(api_key=apikey)
+        bahasa = all_data_in_apikey.language.lower().strip()
+        includetoxicdetection = all_data_in_apikey.toxic.lower().strip()
+
+        if includetoxicdetection == "yes":
+            if bahasa == "id":
+                tokenizer_translate_idtoen = MarianTokenizer.from_pretrained("Helsinki-NLP/opus-mt-id-en")
+                model_translate_idtoen = MarianMTModel.from_pretrained("Helsinki-NLP/opus-mt-id-en")
+
+                inputs = tokenizer_translate_idtoen(text=[question], return_tensors="pt")
+                outputs = model_translate_idtoen.generate(**inputs)
+                translate_hasil = tokenizer_translate_idtoen.decode(outputs[0], skip_special_tokens=True)
+        
+            predicted_label, keterangan = mainhatespeechdetection(inputtext=translate_hasil)
+            if str(predicted_label) == "1":
+                return JsonResponse({
+                    'status': 'success',
+                    'message': "1",
+                    'lengkap': keterangan,
+                    'topk': "not have topk"
+                })
+
+        jawaban, kutipan3, topk = qdrant_answer(
+            pertanyaan=question,
+            pdf_id=apikey,
+            bahasa_pdf=bahasa
+        )
+
+        if kutipan3 is None:
+            kutipan3 = "Tidak ditemukan jawaban yang relevan di dokumen."
+
+        return JsonResponse({
+            'status': 'success',
+            'message': jawaban,
+            'lengkap': kutipan3,
+            'topk': topk
+        })
+
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'status': 'fail',
+            'message': 'Format JSON tidak valid'
+        })
+
+    except TbAPI.DoesNotExist:
+        return JsonResponse({
+            'status': 'fail',
+            'message': 'API key tidak ditemukan'
+        })
+
+    except Exception as e:
+        print("Error gagal dikarenakan =", e)
+        return JsonResponse({
+            'status': 'fail',
+            'message': f'Gagal diproses: {str(e)}'
+        })
 
 @login_required
 def pagesetting(request):

@@ -1,0 +1,1 @@
+pi install tensorflow dan pip install tf-keras -> hati-hati nabrak dengan versi lain

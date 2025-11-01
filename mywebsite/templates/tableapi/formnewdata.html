@@ -160,7 +160,7 @@
         formdata.append("file", $("#pdf_file")[0].files[0]);
         formdata.append("note", $("#note").val());
         formdata.append("language", $("#language").val());
-        formdata.append("toxic", $("toxic").val())
+        formdata.append("toxic", $("#toxic").val())
         formdata.append("csrfmiddlewaretoken", $("input[name='csrfmiddlewaretoken']").val());
         $.ajax({
             url: "{% url 'formnewdatasave' %}",
