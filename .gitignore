@@ -4,7 +4,7 @@
 
 venv
 andreasproject/settings.py
-catatan.md
-catatancoding.md
-mywebsite/redis_proses.md
-mywebsite/vektor_qdrant_proses.md
+# catatan.md
+# catatancoding.md
+# mywebsite/redis_proses.md
+# mywebsite/vektor_qdrant_proses.md
