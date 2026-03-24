@@ -160,8 +160,7 @@ JUDGE_PROMPT_TEMPLATE = """
 Anda adalah seorang juri AI yang objektif dan teliti. Tugas Anda adalah mengevaluasi kualitas jawaban yang dihasilkan oleh model AI lain berdasarkan pertanyaan dan konteks yang diberikan. Berikan evaluasi dalam format JSON yang valid.
 
 Kriteria Evaluasi:
-1.  **Kesesuaian (Faithfulness)**: Apakah jawaban sepenuhnya didasarkan pada informasi dari 'Konteks'? Jawaban tidak boleh mengandung informasi eksternal atau halusinasi. Skor 1-5.
-2.  **Relevansi Jawaban (Answer Relevance)**: Apakah jawaban secara langsung dan lengkap menjawab 'Pertanyaan'? Skor 1-5.
+1.  **Kesesuaian (Faithfulness)**: Apakah jawaban sepenuhnya didasarkan pada informasi dari 'Konteks' dan relavan menjawab pertanyaan? Jawaban tidak boleh mengandung informasi eksternal atau halusinasi. Skor 1-5.
 
 Berikut adalah data yang perlu dievaluasi:
 ---
@@ -177,9 +176,6 @@ Sekarang, berikan evaluasi Anda. Ikuti format JSON di bawah ini tanpa tambahan t
 {{
   "faithfulness_score": [skor dari 1-5],
   "faithfulness_reasoning": "[penjelasan singkat mengapa Anda memberikan skor tersebut]",
-  "relevance_score": [skor dari 1-5],
-  "relevance_reasoning": "[penjelasan singkat mengapa Anda memberikan skor tersebut]",
-  "final_verdict": "[PASS/FAIL - 'FAIL' jika ada halusinasi atau jawaban tidak relevan sama sekali]",
   "corrected_answer": "[jika jawaban asli kurang ideal, berikan versi perbaikan singkat HANYA dari konteks]"
 }}
 """
@@ -216,12 +212,12 @@ def evaluasi_dengan_llm_judge(question, context, answer):
 ################################################################################
 def main():
     """Fungsi utama untuk menjalankan seluruh alur kerja."""
-    pdf_id = "q4jLV1jetmqq29sYiVju8LEVQeqpXHgSxpK5wkEdF4c"
+    pdf_id = "BPXx8DDUDJMWC-tbR11Y8lwqjZCpYUd3WyCb03jIsck"
     bahasa_pdf = "id"
     client = QdrantClient(host="127.0.0.1", port=6333)
 
     # 3. Ajukan pertanyaan ke sistem RAG
-    pertanyaan = "Apa itu DNA?"
+    pertanyaan = "Jelaskan mengenai reaksi kimia!"
     
     jawaban, gabungan_top3, scores = qdrant_answer(client, pertanyaan, pdf_id, bahasa_pdf)    
 
@@ -240,8 +236,6 @@ def main():
             print(f"Evaluasi Gagal: {evaluation['error']}")
         else:
             print(f"Skor Kesesuaian: {evaluation.get('faithfulness_score', 'N/A')} - {evaluation.get('faithfulness_reasoning', 'N/A')}")
-            print(f"Skor Relevansi: {evaluation.get('relevance_score', 'N/A')} - {evaluation.get('relevance_reasoning', 'N/A')}")
-            print(f"Putusan Akhir: {evaluation.get('final_verdict', 'N/A')}")
             print(f"Saran Perbaikan: {evaluation.get('corrected_answer', 'N/A')}")
         print("="*25)
     else:

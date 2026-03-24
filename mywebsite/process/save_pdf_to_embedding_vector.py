@@ -20,8 +20,7 @@ from qdrant_client.http.models import VectorParams, Distance, PointStruct, Filte
 
 # nltk.download('punkt')
 
-# -------------------- SETUP QDRANT --------------------
-
+# SETUP QDRANT
 client = QdrantClient(host="127.0.0.1", port=6333)
 collection_name = "pdf_embeddings"
 vector_size = 384
@@ -33,7 +32,7 @@ if collection_name not in [col.name for col in client.get_collections().collecti
         vectors_config=VectorParams(size=vector_size, distance=Distance.COSINE)
     )
 
-# -------------------- PROSES --------------------
+# PROSES
 
 # model_embedding = SentenceTransformer('all-MiniLM-L6-v2')
 # model_embedding = SentenceTransformer('indobenchmark/indobert-base-p1')
@@ -42,7 +41,7 @@ model_embedding = SentenceTransformer('sentence-transformers/paraphrase-multilin
 def detect_columns(blocks, tolerance=20):
     """Deteksi jumlah kolom berdasarkan posisi x0."""
     x_positions = sorted(set([round(b[0], 1) for b in blocks]))
-    # Kelompokkan posisi yang mirip (selisih kecil dianggap satu kolom)
+    #kelompokkan posisi yang mirip (selisih kecil dianggap satu kolom)
     columns = []
     for x in x_positions:
         if not columns or abs(columns[-1] - x) > tolerance:
@@ -58,11 +57,11 @@ def extract_pdf_text(filepath):
         if not blocks:
             continue
 
-        # Deteksi kolom
+        #deteksi kolom dengan batas kanan
         columns_x = detect_columns(blocks)
-        columns_x.append(page.rect.width)  # batas kanan
+        columns_x.append(page.rect.width) 
 
-        # Loop tiap kolom berdasarkan deteksi otomatis
+        #looping tiap kolom berdasarkan deteksi otomatis
         for col_idx in range(len(columns_x) - 1):
             x0 = columns_x[col_idx]
             x1 = columns_x[col_idx + 1]
@@ -74,12 +73,12 @@ def extract_pdf_text(filepath):
             for b in col_blocks:
                 text = b[4].strip()
                 if text:
-                    # Hapus line break dalam paragraf
                     text = re.sub(r"\n+", " ", text)
                     all_text += text + " "
-            all_text += " "  # pindah antar kolom
+            all_text += " " 
 
-        all_text += " "  # pindah antar halaman
+        #pindah antar halaman
+        all_text += " "  
 
     return all_text
 
@@ -125,13 +124,13 @@ def simpan_ke_qdrant(embedding, teks, pdf_id):
     client.upsert(collection_name=collection_name, points=points)
 
 
-# -------------------- JALANKAN SIMPAN PDF EMBEDDING --------------------
+# JALANKAN SIMPAN PDF EMBEDDING
 def proses_dan_simpan_ke_qdrant(filepath, pdf_id):
     try:
         kalimatjoin = extract_pdf_text(filepath)
         # print(kalimatjoin)
 
-        # Tokenize file pdf
+        #Tokenize file pdf
         kalimat = sent_tokenize(kalimatjoin, language="english")
         # print(kalimat)
 

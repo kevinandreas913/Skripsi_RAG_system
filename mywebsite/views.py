@@ -23,6 +23,7 @@ from django.conf import settings
 from .forms import UserRegistrationForm
 from .models import *
 
+import time
 import logging
 import os
 from uuid import UUID
@@ -270,8 +271,9 @@ def session_data_login(request):
 
 @login_required
 def dashboard(request):
-    
-    session_data_user = session_data_login(request)
+    session_data_user = session_data_login(request) or {}
+
+    # session_data_user = session_data_login(request)
     api_count = TbAPI.objects.filter(user_id=request.user.id).count()
 
     context = {**session_data_user, 
@@ -368,8 +370,7 @@ def formnewdatasave(request):
                 'status': 'error',
                 'message': "Request gagal!"
             })
-
-
+        
     context = {**session_data_user, 
                "namepage": "Form data"}
 
