@@ -154,11 +154,11 @@ Q_CLUSTER = {
     "name": "qcluster",
     "workers": 4,
     "recycle": 500,
-    "timeout": 300,
+    "timeout": 900,
     "queue_limit": 50,
     "bulk": 10,
     "broker_class": "django_q.brokers.redis_broker.Redis",
-    "retry": 120,
+    "retry": 1000,
     "ack_failures": True,
     "catch_up": False,
     "redis": {

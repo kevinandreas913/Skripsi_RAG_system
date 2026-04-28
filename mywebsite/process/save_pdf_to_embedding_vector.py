@@ -5,8 +5,8 @@ import nltk
 # nltk.download('punkt_tab')
 
 from sentence_transformers import SentenceTransformer
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForQuestionAnswering
-from transformers import MarianMTModel, MarianTokenizer
+# from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForQuestionAnswering
+# from transformers import MarianMTModel, MarianTokenizer
 
 # import faiss
 import numpy as np

@@ -29,6 +29,8 @@ import os
 from uuid import UUID
 
 logger = logging.getLogger(__name__)
+tokenizer_translate_idtoen = MarianTokenizer.from_pretrained("Helsinki-NLP/opus-mt-id-en")
+model_translate_idtoen = MarianMTModel.from_pretrained("Helsinki-NLP/opus-mt-id-en")
 
 # Create your views here.
 def landingpage(request):
@@ -516,7 +518,6 @@ def proseschat(request):
                 'status': 'fail',
                 'message': 'API key dan message wajib diisi'
             })
-        
 
         all_data_in_apikey = TbAPI.objects.get(api_key=apikey)
         bahasa = all_data_in_apikey.language.lower().strip()
@@ -524,9 +525,6 @@ def proseschat(request):
 
         if includetoxicdetection == "yes":
             if bahasa == "id":
-                tokenizer_translate_idtoen = MarianTokenizer.from_pretrained("Helsinki-NLP/opus-mt-id-en")
-                model_translate_idtoen = MarianMTModel.from_pretrained("Helsinki-NLP/opus-mt-id-en")
-
                 inputs = tokenizer_translate_idtoen(text=[question], return_tensors="pt")
                 outputs = model_translate_idtoen.generate(**inputs)
                 translate_hasil = tokenizer_translate_idtoen.decode(outputs[0], skip_special_tokens=True)
@@ -535,8 +533,8 @@ def proseschat(request):
             if str(predicted_label) == "1":
                 return JsonResponse({
                     'status': 'success',
-                    'message': "1",
-                    'lengkap': keterangan,
+                    'message': "Terdeteksi Ujaran Kebencian",
+                    'lengkap': "Terdeteksi Ujaran Kebencian keterangan",
                     'topk': "not have topk"
                 })
 
