@@ -3,7 +3,8 @@
 *pdf
 
 venv
-andreasproject/settings.py
+andreasproject/settings_backup.txt
+# andreasproject/settings.py
 # catatan.md
 # catatancoding.md
 # mywebsite/redis_proses.md
