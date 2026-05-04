@@ -29,9 +29,10 @@ if not SECRET_KEY:
     raise ValueError("SECRET_KEY tidak ditemukan di .env")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
+# DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = [h for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h]
 # ALLOWED_HOSTS = []
 
 
@@ -93,6 +94,8 @@ DATABASES = {
     }
 }
 
+if not os.getenv("DB_NAME"):
+    raise ValueError("DB_NAME belum diset di .env")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -128,7 +131,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+# STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -155,16 +158,18 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
+if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
+    raise ValueError("EMAIL config tidak ditemukan di .env")
 
 Q_CLUSTER = {
     "name": "qcluster",
-    "workers": 4,
+    "workers": 1,
     "recycle": 500,
-    "timeout": 900,
-    "queue_limit": 50,
+    "timeout": 1200,
+    "queue_limit": 10,
     "bulk": 10,
     "broker_class": "django_q.brokers.redis_broker.Redis",
-    "retry": 1000,
+    "retry": 1300,
     "ack_failures": True,
     "catch_up": False,
     "redis": {
